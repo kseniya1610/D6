@@ -8,6 +8,9 @@ from .filters import PostFilter
 from .forms import PostForm, ProfileForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
+from django.http import HttpResponse
+from .tasks import hello, send_mail_for_sub_test
+from django.views import View
 
 
 class PostList(ListView):
@@ -106,3 +109,10 @@ class IndexView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context['is_not_premium'] = not self.request.user.groups.filter(name='users').exists()
         return context
+
+class IndexView(View):
+    def get(self, request):
+        # printer.apply_async([10], countdown=10)
+        # hello.delay()
+        send_mail_for_sub_test.delay()
+        return HttpResponse('Hello!')
